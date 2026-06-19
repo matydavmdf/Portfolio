@@ -64,7 +64,7 @@ const PROJECTS = [
     brief:  { it:"Un'esperienza di scacchi immersiva per Apple Vision Pro: gameplay tradizionale e competizione online con integrazione Lichess API.", en:"An immersive chess experience for Apple Vision Pro: traditional over-the-board gameplay with online competition via Lichess API integration." },
     tags:   ["VisionOS", "UX/UI Design", "Spatial Computing"],
     hiTags: [],
-    theme:  { bg:"#F0E6D8", surface:"#DBC0A5", border:"#C9A882", text:"#2A1505", muted:"#6B4020", accent:"#3D1F08" },
+    theme:  { bg:"#F0E6D8", surface:"#3D1F08", border:"#6B4020", text:"#2A1505", muted:"#C9A882", accent:"#DBC0A5" },
     visual: "chess_icon",
     sections: {
       it: [
@@ -76,7 +76,7 @@ const PROJECTS = [
         {
           label: "Il problema",
           title: "Nessuna app di scacchi online esisteva per visionOS",
-          body: "Gli scacchi tradizionali offrono un'esperienza immersiva, fisica, presente. Gli scacchi online offrono avversari reali, progressione, connessione globale. Noi volevamo unire entrambe le cose. Esplorando l'ecosistema visionOS, abbiamo scoperto che non esisteva nessuna vera app di scacchi online. Un gap evidente, in un ecosystem appena nato. Così abbiamo deciso di costruirla noi.",
+          body: "Gli scacchi tradizionali offrono un'esperienza immersiva, fisica, presente. Gli scacchi online offrono avversari reali, progressione, connessione globale — Lichess, ad esempio, permette di giocare sempre contro un avversario in carne e ossa, senza bot. Noi volevamo unire entrambe le esperienze. Esplorando l'ecosistema visionOS, abbiamo scoperto un gap evidente: nessuna app di scacchi online esisteva. Così abbiamo deciso di costruirla.",
         },
         {
           label: "Il processo",
@@ -103,7 +103,7 @@ const PROJECTS = [
         {
           label: "The problem",
           title: "No online chess app existed for visionOS",
-          body: "Traditional chess offers an immersive, physical, present experience. Online chess offers real opponents, progression, global connection. We wanted to combine both. Exploring the visionOS ecosystem, we discovered that no true online chess app existed. A clear gap, in a brand-new ecosystem. So we decided to build it ourselves.",
+          body: "Traditional chess offers an immersive, physical, present experience. Online chess offers real opponents, progression, global connection — Lichess, for example, lets you always play against a real person, never a bot. We wanted to combine both experiences. Exploring the visionOS ecosystem, we found a clear gap: no online chess app existed. So we decided to build it.",
         },
         {
           label: "The process",
@@ -538,7 +538,7 @@ function Card({ project, lang, tx, onClick }) {
         minHeight: isFeat ? undefined : 200,
       }}>
       {isFeat && (
-        <div style={{ background:"#DBC0A5", borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", minHeight:160 }}>
+        <div style={{ background:"#3D1F08", borderRadius:8, display:"flex", alignItems:"center", justifyContent:"center", minHeight:160 }}>
           <img src={CHESS_ICON} alt="Chess+ Online" style={{ width:88, height:88, borderRadius:"50%", objectFit:"cover", boxShadow:"0 4px 20px rgba(42,21,5,0.25)" }} />
         </div>
       )}
