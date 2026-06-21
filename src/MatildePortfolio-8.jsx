@@ -796,7 +796,7 @@ const SECTION_MEDIA = {
       items: [{ src: `${PUB}/assets/aware/trust.png` }],
     },
     4: {
-      type: "gallery", phone: false,
+      type: "gallery", free: true,
       items: [
         { src: `${PUB}/assets/aware/illustration-1.png` },
         { src: `${PUB}/assets/aware/illustration-2.png` },
@@ -809,13 +809,13 @@ function SectionMedia({ media, theme, lang }) {
   if (!media) return null;
   const th = theme;
   // every phone image shares one identical box via .pmedia (uniform size)
-  const frame = (src, key) => (
+  const frame = (src, key, cls = "pmedia") => (
     <img
       key={key}
       src={src}
       alt=""
       loading="lazy"
-      className="pmedia"
+      className={cls}
       style={{
         border: `0.5px solid ${th.border}`,
         boxShadow: `0 8px 30px ${th.text}22`,
@@ -853,7 +853,7 @@ function SectionMedia({ media, theme, lang }) {
               margin: 0,
             }}
           >
-            {frame(it.src, k)}
+            {frame(it.src, k, media.free ? "pmedia-free" : "pmedia")}
             {it.cap && (
               <figcaption
                 style={{
@@ -1524,6 +1524,7 @@ export default function App() {
         @media(max-width:560px){.ba-row{flex-direction:column}.ba-arrow{transform:rotate(90deg)}}
         .pmedia{width:190px;height:390px;object-fit:contain;border-radius:14px;display:block}
         .pmedia-wide{width:100%;max-width:640px;height:auto;object-fit:contain;border-radius:16px;display:block}
+        .pmedia-free{width:auto;height:auto;max-width:min(300px,46vw);object-fit:contain;border-radius:14px;display:block}
         @media(max-width:560px){.pmedia{width:140px;height:300px}}
       `}</style>
 
