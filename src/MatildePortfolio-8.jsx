@@ -82,19 +82,19 @@ const PROJECTS = [
             "\"Non ho bisogno di un'app che spiega. Vorrei vivere un'esperienza che mi faccia percepire il passare del tempo.\"", attribution: "User", body: 'Unfinished nasce da qualcosa che non ho detto. Per molto tempo ho pensato che alcune frasi potessero aspettare. "Lo dirò la prossima volta. Non è il momento. Non è così urgente." Poi ho capito che il tempo non manda avvisi. Non segnala quando sta finendo. C\'era una persona a cui volevo dire qualcosa di importante. Continuavo a rimandare, convinto che ci sarebbe stato un altro giorno normale. Quel giorno non è arrivato. Non è stato un evento drammatico. È stato silenzioso. Ed è proprio questo che mi ha colpita: la finalità non fa rumore.',
         },
         {
-          label: "Il concept", title: "L'icona, le frasi, l'irreversibilità", body: 'L\'icona dell\'app è una linea continua che lentamente si dissolve. Non si spezza: diventa sempre più sottile, finché non è più lì. È così che ho iniziato a vedere il tempo, qualcosa che sembra solido e stabile, finché non te ne accorgi più.\n\nAll\'interno dell\'esperienza, le frasi non le scegli tu. Appaiono in modo casuale, come pensieri che emergono senza avviso: "I wish I told…", "I still think about…", "I never said sorry for…". Non sai quale arriverà. Non puoi prepararti. E questo è il punto, il momento non si annuncia.\n\nOgni frase ha una durata limitata. Se esiti, scompare da sola. Se la completi, devi comunque lasciarla andare con un gesto fisico, e anche allora, svanisce. Non viene salvata, non viene mostrata a nessuno, non lascia traccia. Ho scelto deliberatamente di non archiviare nulla perché nella vita reale non esiste il tasto "recupera".\n\nL\'irrecuperabilità non è una limitazione tecnica. È il senso dell\'intera esperienza.',
+          label: "Il concept", title: "L'icona, le frasi, l'irreversibilità", body: 'L\'icona dell\'app è una linea continua che lentamente si dissolve. Non si spezza: diventa sempre più sottile, finché non è più lì. È così che ho iniziato a vedere il tempo, qualcosa che sembra solido e stabile, finché non te ne accorgi più.\n\nAll\'interno dell\'esperienza, le frasi non le scegli tu. Appaiono in modo casuale, come pensieri che emergono senza avviso: "Vorrei averti detto…", "Penso ancora a…", "Non ho mai chiesto scusa per…". Non sai quale arriverà. Non puoi prepararti. E questo è il punto, il momento non si annuncia.\n\nOgni frase ha una durata limitata. Se esiti, scompare da sola. Se la completi, devi comunque lasciarla andare con un gesto fisico, e anche allora, svanisce. Non viene salvata, non viene mostrata a nessuno, non lascia traccia. Ho scelto deliberatamente di non archiviare nulla perché nella vita reale non esiste il tasto "recupera".\n\nL\'irrecuperabilità non è una limitazione tecnica. È il senso dell\'intera esperienza.',
         },
         {
           label: "L'esperienza", title: "Come si svolge", steps: [
             {
-              t: "Intro (5–7 sec)", d: 'Schermo vuoto. Testo: "Alcune parole scompaiono perché non le diciamo." Poi: Start.',
+              t: "Intro (5–7 sec)", d: 'Schermo vuoto. Testo: "Alcune parole scompaiono perché non le diciamo." Poi: Inizia.',
             },
             {
               t: "Loop (~2 min)", d: "Frasi incomplete con countdown invisibile. Puoi scrivere o guardare la frase dissolversi."},
             {
-              t: "Nessun salvataggio", d: "Quando premi Done, la frase svanisce. Nessuna cronologia, nessun pubblico. Nulla viene registrato."},
+              t: "Nessun salvataggio", d: "Quando premi Fine, la frase svanisce. Nessuna cronologia, nessun pubblico. Nulla viene registrato."},
             {
-              t: "Finale (20–25 sec)", d: 'Schermo vuoto. Poi testo progressivo: "Il momento è fugace. Parla. Agisci. Vivi." Fade out.',
+              t: "Finale (20–25 sec)", d: 'Schermo vuoto. Poi testo progressivo: "Il momento è fugace. Parla. Agisci. Vivi." Dissolvenza.',
             },
           ],
         },
@@ -536,7 +536,7 @@ function Card({ project, lang, tx, onClick }) {
         >
           <img
             src={`${process.env.PUBLIC_URL || ""}/assets/${
-              project.id === "youbidi" ? "youbidy" : project.id
+              project.id
             }/icon.png`}
             alt={`${project.title} icon`}
             loading="lazy"
@@ -765,25 +765,25 @@ const SECTION_MEDIA = {
   youbidi: {
     2: {
       type: "beforeAfter", before: [
-        `${PUB}/assets/youbidy/home-before-1.png`,
-        `${PUB}/assets/youbidy/home-before-2.png`,
+        `${PUB}/assets/youbidi/home-before-1.png`,
+        `${PUB}/assets/youbidi/home-before-2.png`,
       ],
-      after: [`${PUB}/assets/youbidy/home-after.png`],
+      after: [`${PUB}/assets/youbidi/home-after.png`],
     },
     3: {
-      type: "beforeAfter", before: [`${PUB}/assets/youbidy/library-before.png`],
-      after: [`${PUB}/assets/youbidy/library-after.png`],
+      type: "beforeAfter", before: [`${PUB}/assets/youbidi/library-before.png`],
+      after: [`${PUB}/assets/youbidi/library-after.png`],
     },
     4: {
-      type: "beforeAfter", before: [`${PUB}/assets/youbidy/search-before.png`],
-      after: [`${PUB}/assets/youbidy/search-after.png`],
+      type: "beforeAfter", before: [`${PUB}/assets/youbidi/search-before.png`],
+      after: [`${PUB}/assets/youbidi/search-after.png`],
     },
     5: {
-      type: "beforeAfter", before: [`${PUB}/assets/youbidy/timer-before.png`],
+      type: "beforeAfter", before: [`${PUB}/assets/youbidi/timer-before.png`],
       after: [
-        `${PUB}/assets/youbidy/timer-after-1.png`,
-        `${PUB}/assets/youbidy/timer-after-2.png`,
-        `${PUB}/assets/youbidy/timer-after-3.png`,
+        `${PUB}/assets/youbidi/timer-after-1.png`,
+        `${PUB}/assets/youbidi/timer-after-2.png`,
+        `${PUB}/assets/youbidi/timer-after-3.png`,
       ],
     },
   },
@@ -792,7 +792,7 @@ const SECTION_MEDIA = {
     2: {
       type: "gallery", phone: true,
       items: [
-        { src: `${PUB}/assets/aware/concept-1.jpg` },
+        { src: `${PUB}/assets/aware/concept-1.png` },
         { src: `${PUB}/assets/aware/concept-2.png` },
       ],
     },
@@ -1596,10 +1596,10 @@ export default function App() {
         .ba-group{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
         .ba-arrow{font-size:26px;line-height:1;flex-shrink:0;transition:transform 0.3s}
         @media(max-width:560px){.ba-row{flex-direction:column}.ba-arrow{transform:rotate(90deg)}}
-        .pmedia{width:190px;height:390px;object-fit:contain;border-radius:14px;display:block}
+        .pmedia{width:auto;height:390px;max-width:90vw;object-fit:contain;border-radius:14px;display:block}
         .pmedia-wide{width:100%;max-width:760px;height:auto;object-fit:contain;border-radius:16px;display:block}
         .pmedia-free{width:auto;height:auto;max-width:min(300px,46vw);object-fit:contain;border-radius:14px;display:block}
-        @media(max-width:560px){.pmedia{width:140px;height:300px}}
+        @media(max-width:560px){.pmedia{height:300px}}
       `}</style>
 
       <NavBar
