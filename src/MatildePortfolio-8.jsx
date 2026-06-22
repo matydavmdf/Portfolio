@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import { createPortal } from "react-dom";
 
 /* ─── APP ICONS (base64) ────────────────────────────────── */
 const AWARE_ICON =
@@ -261,7 +262,7 @@ function DissolveAnim({ accent }) {
   );
 }
 
-function VisualShell({ project }) {
+function VisualShell({ project, onZoom }) {
   const t = project.theme;
   return (
     <div
@@ -297,21 +298,23 @@ function VisualShell({ project }) {
         <img
           src={AWARE_ICON}
           alt="AWARE, Path to Andreas icon"
+          onClick={() => onZoom && onZoom(AWARE_ICON)}
           style={{
             width: 120,
             height: 120,
             borderRadius: 26,
-            objectFit: "cover", boxShadow: "0 4px 24px rgba(44,24,16,0.13)"}}
+            objectFit: "cover", boxShadow: "0 4px 24px rgba(44,24,16,0.13)", cursor: "zoom-in"}}
         />
       )}
       {project.visual === "chess_icon" && (
         <img
           src={CHESS_ICON}
           alt="Chess+ Online icon"
+          onClick={() => onZoom && onZoom(CHESS_ICON)}
           style={{
             width: 120,
             height: 120,
-            borderRadius: "50%", objectFit: "cover", boxShadow: "0 4px 28px rgba(42,21,5,0.45)"}}
+            borderRadius: "50%", objectFit: "cover", boxShadow: "0 4px 28px rgba(42,21,5,0.45)", cursor: "zoom-in"}}
         />
       )}
       {project.visual === "chess" && (
@@ -410,7 +413,7 @@ function NavBar({
     <button
       onClick={() => onNav(target)}
       style={{
-        position: "relative", background: "none", border: "none", cursor: "pointer", fontSize: 11,
+        position: "relative", background: "none", border: "none", cursor: "pointer", fontSize: 13,
         letterSpacing: "0.1em", textTransform: "uppercase", color: isActive ? navText : navMuted,
         fontFamily: "'Outfit',sans-serif", fontWeight: isActive ? 500 : 400,
         transition: "color 0.25s", padding: "3px 0"}}
@@ -471,7 +474,7 @@ function NavBar({
           style={{
             background: "none", border: `0.5px solid ${navBorder}`,
             color: navMuted,
-            cursor: "pointer", fontSize: 10,
+            cursor: "pointer", fontSize: 11,
             letterSpacing: "0.13em", textTransform: "uppercase", padding: "4px 13px", borderRadius: 20,
             fontFamily: "'Outfit',sans-serif", fontWeight: 500,
             transition: "all 0.2s"}}
@@ -566,7 +569,7 @@ function Card({ project, lang, tx, onClick }) {
         </h3>
         <p
           style={{
-            fontSize: 13,
+            fontSize: 15,
             color: B.muted,
             lineHeight: 1.7,
             fontFamily: "'Outfit',sans-serif", marginBottom: "0.9rem"}}
@@ -673,7 +676,7 @@ function HeroSection({ tx, sectionRef, onScrollNext }) {
         <span
           style={{
             fontFamily: "'Cormorant Garamond',serif", fontStyle: "italic", fontWeight: 400,
-            fontSize: 17,
+            fontSize: 20,
             color: B.muted,
             letterSpacing: "0.02em"}}
         >
@@ -698,15 +701,16 @@ function ProjectsSection({ lang, tx, sectionRef, onOpen }) {
     <section
       ref={sectionRef}
       id="projects"
-      style={{ padding: "6rem 3rem 5rem", scrollMarginTop: "4rem" }}
+      style={{ padding: "6rem clamp(1.4rem,5vw,3rem) 5rem", scrollMarginTop: "4rem" }}
     >
+      <div style={{ maxWidth: 1180, margin: "0 auto" }}>
       <Reveal>
         <h2
           style={{
             fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(36px,5vw,58px)", fontWeight: 700,
             lineHeight: 1.1,
             color: B.text,
-            marginBottom: "1.8rem", textAlign: "center"}}
+            marginBottom: "2.8rem"}}
         >
           {tx.projHead}
         </h2>
@@ -722,6 +726,7 @@ function ProjectsSection({ lang, tx, sectionRef, onOpen }) {
             />
           </Reveal>
         ))}
+      </div>
       </div>
     </section>
   );
@@ -805,7 +810,7 @@ const SECTION_MEDIA = {
   },
 };
 
-function SectionMedia({ media, theme, lang }) {
+function SectionMedia({ media, theme, lang, onZoom }) {
   if (!media) return null;
   const th = theme;
   // every phone image shares one identical box via .pmedia (uniform size)
@@ -816,10 +821,12 @@ function SectionMedia({ media, theme, lang }) {
       alt=""
       loading="lazy"
       className={cls}
+      onClick={() => onZoom && onZoom(src)}
       style={{
         border: `0.5px solid ${th.border}`,
         boxShadow: `0 8px 30px ${th.text}22`,
         background: th.surface,
+        cursor: "zoom-in",
       }}
     />
   );
@@ -832,10 +839,12 @@ function SectionMedia({ media, theme, lang }) {
           alt={media.alt || ""}
           loading="lazy"
           className="pmedia-wide"
+          onClick={() => onZoom && onZoom(media.src)}
           style={{
             border: `0.5px solid ${th.border}`,
             boxShadow: `0 12px 44px ${th.text}26`,
             background: th.surface,
+            cursor: "zoom-in",
           }}
         />
       </div>
@@ -907,15 +916,67 @@ function SectionMedia({ media, theme, lang }) {
   return null;
 }
 
+/* ─── IMAGE LIGHTBOX ─────────────────────────────────────── */
+function Lightbox({ src, onClose }) {
+  useEffect(() => {
+    if (!src) return;
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.removeEventListener("keydown", onKey);
+      document.body.style.overflow = prev;
+    };
+  }, [src, onClose]);
+  if (!src) return null;
+  return createPortal(
+    <div
+      onClick={onClose}
+      style={{
+        position: "fixed", inset: 0, zIndex: 9999,
+        background: "rgba(15,15,18,0.9)", backdropFilter: "blur(6px)",
+        display: "flex", alignItems: "center", justifyContent: "center",
+        padding: "clamp(1rem,5vw,3rem)", cursor: "zoom-out",
+        animation: "lightboxIn 0.22s ease both"}}
+    >
+      <img
+        src={src}
+        alt=""
+        onClick={(e) => e.stopPropagation()}
+        style={{
+          maxWidth: "100%", maxHeight: "100%", objectFit: "contain",
+          borderRadius: 12, boxShadow: "0 24px 90px rgba(0,0,0,0.55)",
+          cursor: "default"}}
+      />
+      <button
+        onClick={onClose}
+        aria-label="Close"
+        style={{
+          position: "fixed", top: "1.4rem", right: "1.6rem",
+          background: "rgba(255,255,255,0.12)",
+          border: "0.5px solid rgba(255,255,255,0.4)",
+          color: "#fff", width: 42, height: 42, borderRadius: "50%",
+          cursor: "pointer", fontSize: 22, lineHeight: 1,
+          display: "flex", alignItems: "center", justifyContent: "center"}}
+      >
+        ×
+      </button>
+    </div>,
+    document.body,
+  );
+}
+
 function ProjectDetailView({ projectId, lang, tx, onBack }) {
   const project = PROJECTS.find((p) => p.id === projectId);
   if (!project) return null;
   const th = project.theme;
   const secs = project.sections[lang];
+  const [zoom, setZoom] = useState(null);
   return (
     <Page bg={th.bg}>
-      <div style={{ padding: "5rem 2.5rem 6rem" }}>
-        <div style={{ maxWidth: 640, margin: "0 auto" }}>
+      <div style={{ padding: "5rem clamp(1.4rem,5vw,3rem) 6rem" }}>
+        <div style={{ maxWidth: 760, margin: "0 auto" }}>
           <p
             style={{
               fontSize: 10,
@@ -925,10 +986,10 @@ function ProjectDetailView({ projectId, lang, tx, onBack }) {
           >
             ← {lang === "it" ? "Progetti" : "Projects"}
           </p>
-          <VisualShell project={project} />
+          <VisualShell project={project} onZoom={setZoom} />
           <p
             style={{
-              fontSize: 10,
+              fontSize: 11,
               letterSpacing: "0.15em", textTransform: "uppercase", color: th.muted,
               fontFamily: "'Outfit',sans-serif", marginBottom: "0.5rem"}}
           >
@@ -952,7 +1013,7 @@ function ProjectDetailView({ projectId, lang, tx, onBack }) {
               <span
                 key={t}
                 style={{
-                  fontSize: 10,
+                  fontSize: 11,
                   letterSpacing: "0.08em", border: `0.5px solid ${th.border}`,
                   color: th.muted,
                   padding: "3px 10px", borderRadius: 20,
@@ -971,7 +1032,7 @@ function ProjectDetailView({ projectId, lang, tx, onBack }) {
               />
               <p
                 style={{
-                  fontSize: 10,
+                  fontSize: 11,
                   letterSpacing: "0.18em", textTransform: "uppercase", color: th.muted,
                   fontFamily: "'Outfit',sans-serif", marginBottom: "0.5rem"}}
               >
@@ -979,7 +1040,7 @@ function ProjectDetailView({ projectId, lang, tx, onBack }) {
               </p>
               <h3
                 style={{
-                  fontFamily: "'Cormorant Garamond',serif", fontSize: 24,
+                  fontFamily: "'Cormorant Garamond',serif", fontSize: 28,
                   fontWeight: 700,
                   color: th.text,
                   marginBottom: "0.8rem", lineHeight: 1.2,
@@ -990,7 +1051,7 @@ function ProjectDetailView({ projectId, lang, tx, onBack }) {
               {sec.body && (
                 <p
                   style={{
-                    fontSize: 14,
+                    fontSize: 17,
                     color: th.muted,
                     lineHeight: 1.85,
                     fontFamily: "'Outfit',sans-serif", marginBottom: "0.7rem"}}
@@ -1002,7 +1063,7 @@ function ProjectDetailView({ projectId, lang, tx, onBack }) {
                 <blockquote
                   style={{
                     borderLeft: `1.5px solid ${th.accent}`,
-                    padding: "0.6rem 1.1rem", margin: "1.1rem 0", fontFamily: "'Cormorant Garamond',serif", fontSize: 19,
+                    padding: "0.6rem 1.1rem", margin: "1.1rem 0", fontFamily: "'Cormorant Garamond',serif", fontSize: 22,
                     fontStyle: "italic", color: th.text,
                     lineHeight: 1.5,
                   }}
@@ -1011,7 +1072,7 @@ function ProjectDetailView({ projectId, lang, tx, onBack }) {
                   {sec.attribution && (
                     <p
                       style={{
-                        fontSize: 14,
+                        fontSize: 15,
                         fontStyle: "normal", color: th.muted,
                         fontFamily: "'Outfit',sans-serif", marginTop: "0.5rem", textAlign: "right", lineHeight: 1.85,
                       }}
@@ -1044,7 +1105,7 @@ function ProjectDetailView({ projectId, lang, tx, onBack }) {
                     </div>
                     <p
                       style={{
-                        fontSize: 14,
+                        fontSize: 16,
                         color: th.muted,
                         lineHeight: 1.75,
                         fontFamily: "'Outfit',sans-serif"}}
@@ -1074,7 +1135,7 @@ function ProjectDetailView({ projectId, lang, tx, onBack }) {
                   </p>
                   <p
                     style={{
-                      fontSize: 13,
+                      fontSize: 15,
                       color: th.muted,
                       lineHeight: 1.8,
                       fontStyle: "italic", fontFamily: "'Outfit',sans-serif"}}
@@ -1088,12 +1149,14 @@ function ProjectDetailView({ projectId, lang, tx, onBack }) {
                   media={SECTION_MEDIA[project.id][i]}
                   theme={th}
                   lang={lang}
+                  onZoom={setZoom}
                 />
               )}
             </div>
           ))}
         </div>
       </div>
+      <Lightbox src={zoom} onClose={() => setZoom(null)} />
     </Page>
   );
 }
@@ -1136,37 +1199,35 @@ function AboutSection({ lang, tx, sectionRef }) {
     <section ref={sectionRef} id="about" style={{ scrollMarginTop: "4rem" }}>
       <Reveal
         style={{
-          maxWidth: 660,
-          margin: "0 auto", padding: "5rem 2.5rem 5rem", width: "100%"}}
+          padding: "5rem clamp(1.4rem,5vw,3rem) 5rem", width: "100%"}}
       >
+        <div style={{ maxWidth: 1180, margin: "0 auto" }}>
         <h2
           style={{
             fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(36px,5vw,58px)", fontWeight: 700,
             lineHeight: 1.1,
             color: B.text,
-            marginBottom: "1.8rem"}}
+            marginBottom: "2.8rem"}}
         >
           {tx.aboutTitle}
         </h2>
+        <div className="about-grid">
+          <div>
         {(lang === "it" ? bioIT : bioEN).split("\n\n").map((para, i) => (
           <p
             key={i}
             style={{
-              fontSize: 15,
+              fontSize: 17,
               color: B.muted,
               lineHeight: 1.9,
-              fontFamily: "'Outfit',sans-serif", marginBottom: "1rem", maxWidth: 560,
-            }}
+              fontFamily: "'Outfit',sans-serif", marginBottom: "1rem"}}
           >
             {para}
           </p>
         ))}
 
-        <hr
-          style={{
-            border: "none", borderTop: `0.5px solid ${B.border}`,
-            margin: "2.5rem 0"}}
-        />
+          </div>
+          <div>
         <p
           style={{
             fontSize: 10,
@@ -1197,7 +1258,7 @@ function AboutSection({ lang, tx, sectionRef }) {
             >
               <p
                 style={{
-                  fontSize: 13,
+                  fontSize: 14,
                   color: B.text,
                   fontWeight: 500,
                   fontFamily: "'Outfit',sans-serif"}}
@@ -1247,7 +1308,7 @@ function AboutSection({ lang, tx, sectionRef }) {
               </p>
               <p
                 style={{
-                  fontSize: 11,
+                  fontSize: 12,
                   color: B.dim,
                   lineHeight: 1.6,
                   fontFamily: "'Outfit',sans-serif"}}
@@ -1281,6 +1342,9 @@ function AboutSection({ lang, tx, sectionRef }) {
             </span>
           ))}
         </div>
+          </div>
+        </div>
+        </div>
       </Reveal>
     </section>
   );
@@ -1291,9 +1355,11 @@ function ContactSection({ lang, tx, sectionRef }) {
     <section ref={sectionRef} id="contact" style={{ scrollMarginTop: "4rem" }}>
       <div
         style={{
-          display: "flex", alignItems: "center", justifyContent: "center", padding: "6rem 2.5rem 4rem", minHeight: "88vh"}}
+          display: "flex", alignItems: "center", justifyContent: "center", padding: "6rem clamp(1.4rem,5vw,3rem) 4rem", minHeight: "82vh"}}
       >
-        <Reveal style={{ maxWidth: 480, width: "100%" }}>
+        <Reveal style={{ width: "100%" }}>
+          <div className="contact-grid">
+            <div>
           <h2
             style={{
               fontFamily: "'Cormorant Garamond',serif", fontSize: "clamp(34px,5vw,56px)", fontWeight: 700,
@@ -1305,13 +1371,15 @@ function ContactSection({ lang, tx, sectionRef }) {
           </h2>
           <p
             style={{
-              fontSize: 15,
+              fontSize: 17,
               color: B.muted,
               lineHeight: 1.8,
               fontFamily: "'Outfit',sans-serif", marginBottom: "2.2rem"}}
           >
             {tx.contactSub}
           </p>
+            </div>
+            <div>
           <div
             style={{
               display: "flex", flexDirection: "column", gap: 9,
@@ -1378,6 +1446,8 @@ function ContactSection({ lang, tx, sectionRef }) {
                 {tx.available}
               </strong>, {tx.availSub}
             </p>
+          </div>
+            </div>
           </div>
         </Reveal>
       </div>
@@ -1512,18 +1582,22 @@ export default function App() {
         body{background:${B.bg};-webkit-font-smoothing:antialiased}
         @keyframes pageIn{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
         @keyframes floatHint{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,7px)}}
+        @keyframes lightboxIn{from{opacity:0}to{opacity:1}}
         ::-webkit-scrollbar{width:3px}::-webkit-scrollbar-thumb{background:${B.border};border-radius:2px}
-        .proj-grid{display:grid;gap:14px;grid-template-columns:repeat(4,1fr);align-items:stretch;max-width:1280px;margin:0 auto}
-        @media(max-width:1024px){.proj-grid{grid-template-columns:repeat(2,1fr)}}
-        @media(max-width:560px){.proj-grid{grid-template-columns:1fr}}
+        .proj-grid{display:grid;gap:20px;grid-template-columns:repeat(2,1fr);align-items:stretch;max-width:1180px;margin:0 auto}
+        @media(max-width:640px){.proj-grid{grid-template-columns:1fr;gap:14px}}
         @media(max-width:600px){nav{padding:1rem 1.4rem !important}section#projects{padding-left:1.4rem !important;padding-right:1.4rem !important}}
+        .about-grid{display:grid;grid-template-columns:1fr;gap:2.4rem;width:100%}
+        @media(min-width:920px){.about-grid{grid-template-columns:1.05fr 0.95fr;gap:4.5rem;align-items:start}}
+        .contact-grid{display:grid;grid-template-columns:1fr;gap:2.4rem;max-width:1000px;margin:0 auto;width:100%;align-items:center}
+        @media(min-width:820px){.contact-grid{grid-template-columns:1fr 0.9fr;gap:4rem}}
         .dev-row{display:flex;gap:16px;flex-wrap:wrap;justify-content:center;align-items:flex-start}
         .ba-row{display:flex;align-items:center;justify-content:center;gap:1.1rem;flex-wrap:wrap}
         .ba-group{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
         .ba-arrow{font-size:26px;line-height:1;flex-shrink:0;transition:transform 0.3s}
         @media(max-width:560px){.ba-row{flex-direction:column}.ba-arrow{transform:rotate(90deg)}}
         .pmedia{width:190px;height:390px;object-fit:contain;border-radius:14px;display:block}
-        .pmedia-wide{width:100%;max-width:640px;height:auto;object-fit:contain;border-radius:16px;display:block}
+        .pmedia-wide{width:100%;max-width:760px;height:auto;object-fit:contain;border-radius:16px;display:block}
         .pmedia-free{width:auto;height:auto;max-width:min(300px,46vw);object-fit:contain;border-radius:14px;display:block}
         @media(max-width:560px){.pmedia{width:140px;height:300px}}
       `}</style>
@@ -1559,7 +1633,7 @@ export default function App() {
             sectionRef={projectsRef}
             onOpen={openProject}
           />
-          <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 3rem" }}>
+          <div style={{ maxWidth: 1180, margin: "0 auto", padding: "0 clamp(1.4rem,5vw,3rem)" }}>
             <hr
               style={{
                 border: "none", borderTop: `0.5px solid ${B.border}`,
